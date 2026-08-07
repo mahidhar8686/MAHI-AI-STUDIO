@@ -1,0 +1,7 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+allowBuilds:
+  electron-winstaller: set this to true or false
+minimumReleaseAgeExclude:
+  - lucide-react@1.30.0
