@@ -76,6 +76,11 @@ export default function MediaList({
               ) : (
                 <span className="text-2xl">🎵</span>
               )}
+              {!file.available && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-[10px] text-slate-200">
+                  Unavailable
+                </div>
+              )}
             </div>
 
             <div className="min-w-0">

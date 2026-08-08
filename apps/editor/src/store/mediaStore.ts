@@ -6,6 +6,7 @@ export interface MediaFile {
   name: string;
   type: string;
   url: string;
+  available?: boolean;
 }
 
 export interface TimelineClip {

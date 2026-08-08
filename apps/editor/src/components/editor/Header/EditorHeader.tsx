@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEditorStore } from "../../../stores/editorStore";
-import { saveProject } from "../../../services/projectPersistence";
+import { handleSaveProject } from "../../../services/projectPersistence";
 
 export default function EditorHeader() {
   const navigate = useNavigate();
@@ -37,18 +37,7 @@ export default function EditorHeader() {
           : "bg-amber-500/15 text-amber-300";
 
   const handleSave = () => {
-    setSaveState("saving");
-    setStatus("Saving project...");
-
-    const result = saveProject();
-
-    if (result.ok) {
-      setSaved(true);
-      setStatus("Project saved");
-    } else {
-      setSaveState("failed");
-      setStatus(`Save failed: ${result.error ?? "unknown error"}`);
-    }
+    handleSaveProject(setSaveState, setSaved, setStatus);
   };
 
   return (

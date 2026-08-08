@@ -1,6 +1,6 @@
 import { useEditorStore } from "../../../stores/editorStore";
 import { useMediaStore } from "../../../store/mediaStore";
-import { saveProject } from "../../../services/projectPersistence";
+import { handleSaveProject } from "../../../services/projectPersistence";
 
 export default function Toolbar() {
   const projectName = useEditorStore((state) => state.projectName);
@@ -72,18 +72,7 @@ export default function Toolbar() {
         <button
           type="button"
           onClick={() => {
-            setSaveState("saving");
-            setStatus("Saving project...");
-
-            const result = saveProject();
-
-            if (result.ok) {
-              setSaved(true);
-              setStatus("Project saved");
-            } else {
-              setSaveState("failed");
-              setStatus(`Save failed: ${result.error ?? "unknown error"}`);
-            }
+            handleSaveProject(setSaveState, setSaved, setStatus);
           }}
           className="rounded-md bg-emerald-600 px-3 py-2 font-medium text-white hover:bg-emerald-500"
         >

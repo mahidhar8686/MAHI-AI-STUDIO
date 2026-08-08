@@ -16,9 +16,31 @@ export interface LoadResult {
   error?: string;
 }
 
+export function handleSaveProject(
+  setSaveState: (state: "saved" | "unsaved" | "saving" | "failed") => void,
+  setSaved: (saved: boolean) => void,
+  setStatus: (status: string) => void
+): SaveResult {
+  setSaveState("saving");
+  setStatus("Saving project...");
+
+  const result = saveProject();
+
+  if (result.ok) {
+    setSaved(true);
+    setStatus("Project saved");
+  } else {
+    setSaveState("failed");
+    setStatus(`Save failed: ${result.error ?? "unknown error"}`);
+  }
+
+  return result;
+}
+
 interface PersistedProjectState {
   version: number;
   savedAt: string;
+  zoom: number;
   project: {
     name: string;
     media: { files: MediaFile[] };
@@ -34,6 +56,7 @@ export function saveProject(): SaveResult {
     const state: PersistedProjectState = {
       version: PROJECT_VERSION,
       savedAt: new Date().toISOString(),
+      zoom: media.zoom,
       project: {
         name: editor.projectName,
         media: { files: media.files },
@@ -90,14 +113,28 @@ export function loadProject(): LoadResult {
     };
   }
 
+  const validFiles = parsed.project.media.files.map((file) => {
+    let available = true;
+    try {
+      new URL(file.url);
+    } catch {
+      available = false;
+    }
+    return { ...file, available };
+  });
+
   useMediaStore.setState({
-    files: parsed.project.media.files,
-    timeline: parsed.project.timeline.clips,
+    files: validFiles,
+    timeline: parsed.project.timeline.clips.map((clip) => ({
+      ...clip,
+      selected: clip.id === parsed.project.timeline.selectedClip,
+    })),
     selectedClip: parsed.project.timeline.selectedClip,
     selected: undefined,
     playhead: 0,
     currentTime: 0,
     isPlaying: false,
+    zoom: parsed.zoom,
   });
 
   const editor = useEditorStore.getState();
@@ -177,6 +214,7 @@ function parsePersistedProject(
       ? project.name
       : "Untitled project";
 
+  const rawZoom = typeof value.zoom === "number" && Number.isFinite(value.zoom) ? value.zoom : 40;
   const files = Array.isArray(project.media.files)
     ? project.media.files.filter(isValidMediaFile)
     : [];
@@ -204,6 +242,7 @@ function parsePersistedProject(
     version: PROJECT_VERSION,
     savedAt:
       typeof value.savedAt === "string" ? value.savedAt : "",
+    zoom: rawZoom,
     project: {
       name,
       media: { files },
