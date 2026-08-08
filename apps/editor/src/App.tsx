@@ -1,5 +1,5 @@
-import Router from "./router";
+import AppShell from "./app/AppShell";
 
 export default function App() {
-  return <Router />;
+  return <AppShell />;
 }

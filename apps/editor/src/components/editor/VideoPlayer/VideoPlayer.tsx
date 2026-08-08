@@ -33,19 +33,11 @@ export default function VideoPlayer() {
 
   if (!selected) {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          background: "#000",
-          color: "#9CA3AF",
-          fontSize: 18,
-        }}
-      >
-        📺 No media selected
+      <div className="flex h-full w-full items-center justify-center bg-slate-950 text-center text-sm text-slate-400">
+        <div className="max-w-xs px-4">
+          <div className="mb-2 text-3xl">📺</div>
+          <p>No media selected. Import a file from the media library to preview it here.</p>
+        </div>
       </div>
     );
   }

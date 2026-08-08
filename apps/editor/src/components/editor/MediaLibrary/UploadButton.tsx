@@ -1,4 +1,4 @@
-import { ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 import { useMediaStore } from "../../../store/mediaStore";
 
 export default function UploadButton() {
@@ -30,21 +30,9 @@ export default function UploadButton() {
   };
 
   return (
-    <label
-      style={{
-        display: "block",
-        width: "100%",
-        background: "#2563EB",
-        color: "#fff",
-        textAlign: "center",
-        padding: "12px",
-        borderRadius: 8,
-        cursor: "pointer",
-        fontWeight: 600,
-        boxSizing: "border-box",
-      }}
-    >
-      📂 Import Media
+    <label className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-sky-600 px-3 py-2.5 text-sm font-medium text-white transition hover:bg-sky-500">
+      <span className="mr-2">📂</span>
+      <span>Import media</span>
 
       <input
         hidden

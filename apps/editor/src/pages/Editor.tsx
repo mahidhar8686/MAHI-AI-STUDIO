@@ -1,10 +1,5 @@
-import MainLayout from "../components/layout/MainLayout";
-import EditorLayout from "../components/editor/EditorLayout";
+import EditorWorkspace from "../features/editor/EditorWorkspace";
 
 export default function Editor() {
-  return (
-    <MainLayout>
-      <EditorLayout />
-    </MainLayout>
-  );
+  return <EditorWorkspace />;
 }

@@ -2,14 +2,7 @@ import Timeline from "../Timeline/Timeline";
 
 export default function TimelinePanel() {
   return (
-    <section
-      style={{
-        gridColumn: "1 / span 3",
-        background: "#111827",
-        borderRadius: 12,
-        overflow: "hidden",
-      }}
-    >
+    <section className="h-full w-full overflow-hidden bg-slate-900">
       <Timeline />
     </section>
   );

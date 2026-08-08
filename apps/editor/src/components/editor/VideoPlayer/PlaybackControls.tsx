@@ -7,60 +7,46 @@ export default function PlaybackControls() {
 
   const currentTime = useMediaStore((s) => s.currentTime);
   const setCurrentTime = useMediaStore((s) => s.setCurrentTime);
+  const isPlaying = useMediaStore((s) => s.isPlaying);
 
   return (
-    <div
-      style={{
-        height: 60,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "0 20px",
-        background: "#111827",
-        borderTop: "1px solid #374151",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          gap: 10,
-        }}
-      >
+    <div className="flex items-center justify-between border-t border-slate-700 bg-slate-950 px-4 py-3 text-sm text-slate-200">
+      <div className="flex items-center gap-2">
         <button
-          onClick={() =>
-            setCurrentTime(Math.max(0, currentTime - 5))
-          }
+          type="button"
+          onClick={() => setCurrentTime(Math.max(0, currentTime - 5))}
+          className="rounded-md bg-slate-800 px-2.5 py-2 hover:bg-slate-700"
+          aria-label="Rewind 5 seconds"
         >
           ⏮
         </button>
-
-        <button onClick={play}>
-          ▶
+        <button
+          type="button"
+          onClick={isPlaying ? pause : play}
+          className="rounded-md bg-sky-600 px-3 py-2 font-medium text-white hover:bg-sky-500"
+          aria-label={isPlaying ? "Pause playback" : "Start playback"}
+        >
+          {isPlaying ? "⏸" : "▶"}
         </button>
-
-        <button onClick={pause}>
-          ⏸
-        </button>
-
-        <button onClick={stop}>
+        <button
+          type="button"
+          onClick={stop}
+          className="rounded-md bg-slate-800 px-2.5 py-2 hover:bg-slate-700"
+          aria-label="Stop playback"
+        >
           ⏹
         </button>
-
         <button
-          onClick={() =>
-            setCurrentTime(currentTime + 5)
-          }
+          type="button"
+          onClick={() => setCurrentTime(currentTime + 5)}
+          className="rounded-md bg-slate-800 px-2.5 py-2 hover:bg-slate-700"
+          aria-label="Fast forward 5 seconds"
         >
           ⏭
         </button>
       </div>
 
-      <div
-        style={{
-          color: "#9CA3AF",
-          fontSize: 13,
-        }}
-      >
+      <div className="whitespace-nowrap text-xs text-slate-300">
         {currentTime.toFixed(1)} sec
       </div>
     </div>

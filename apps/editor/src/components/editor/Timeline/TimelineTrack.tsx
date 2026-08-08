@@ -64,7 +64,7 @@ export default function TimelineTrack({
 
           const x = e.clientX - rect.left;
 
-          const start = Math.max(
+          Math.max(
             0,
             Math.round((x - 20) / zoom)
           );
