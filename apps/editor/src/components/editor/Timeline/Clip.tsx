@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { useMediaStore } from "../../../store/mediaStore";
+import {
+  buildSnapTargets,
+  snapTimelinePosition,
+} from "../../../utils/timelineSnapping";
 
 interface Props {
   id: string;
@@ -15,6 +19,8 @@ export default function Clip({
   duration,
 }: Props) {
   const zoom = useMediaStore((s) => s.zoom);
+  const timeline = useMediaStore((s) => s.timeline);
+  const playhead = useMediaStore((s) => s.playhead);
 
   const moveClip = useMediaStore((s) => s.moveClip);
   const resizeClip = useMediaStore((s) => s.resizeClip);
@@ -54,7 +60,20 @@ export default function Clip({
             originalStart + seconds
           );
 
-          moveClip(id, nextStart);
+          const targets = buildSnapTargets(
+            id,
+            timeline,
+            playhead,
+            zoom
+          );
+
+          const snapped = snapTimelinePosition({
+            candidate: nextStart,
+            targets,
+            zoom,
+          });
+
+          moveClip(id, snapped);
         };
 
         const up = () => {
@@ -183,12 +202,26 @@ export default function Clip({
               0,
               originalStart + deltaSeconds
             );
-            const nextDuration = Math.max(
-              1,
-              originalStart + originalDuration - nextStart
+
+            const targets = buildSnapTargets(
+              id,
+              timeline,
+              playhead,
+              zoom
             );
 
-            trimClip(id, nextStart, nextDuration);
+            const snapped = snapTimelinePosition({
+              candidate: nextStart,
+              targets,
+              zoom,
+            });
+
+            const nextDuration = Math.max(
+              1,
+              originalStart + originalDuration - snapped
+            );
+
+            trimClip(id, snapped, nextDuration);
           };
 
           const up = () => {
@@ -256,7 +289,27 @@ export default function Clip({
             const delta = ev.clientX - startX;
             const value = original + Math.round(delta / zoom);
 
-            resizeClip(id, Math.max(1, value));
+            const end = start + value;
+
+            const targets = buildSnapTargets(
+              id,
+              timeline,
+              playhead,
+              zoom
+            );
+
+            const snappedEnd = snapTimelinePosition({
+              candidate: end,
+              targets,
+              zoom,
+            });
+
+            const snappedDuration = Math.max(
+              1,
+              snappedEnd - start
+            );
+
+            resizeClip(id, snappedDuration);
           };
 
           const up = () => {
