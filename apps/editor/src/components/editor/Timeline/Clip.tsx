@@ -10,6 +10,7 @@ interface Props {
   title: string;
   start: number;
   duration: number;
+  locked: boolean;
 }
 
 export default function Clip({
@@ -17,6 +18,7 @@ export default function Clip({
   title,
   start,
   duration,
+  locked,
 }: Props) {
   const zoom = useMediaStore((s) => s.zoom);
   const timeline = useMediaStore((s) => s.timeline);
@@ -28,6 +30,7 @@ export default function Clip({
 
   const selectedClip = useMediaStore((s) => s.selectedClip);
   const selectClip = useMediaStore((s) => s.selectClip);
+  const toggleLock = useMediaStore((s) => s.toggleLock);
 
   const [dragging, setDragging] = useState(false);
   const [resizing, setResizing] = useState(false);
@@ -42,10 +45,12 @@ export default function Clip({
         e.preventDefault();
         e.stopPropagation();
 
+        selectClip(id);
+
+        if (locked) return;
+
         const previousUserSelect = document.body.style.userSelect;
         document.body.style.userSelect = "none";
-
-        selectClip(id);
 
         const startX = e.clientX;
         const originalStart = start;
@@ -135,9 +140,11 @@ export default function Clip({
 
         fontWeight: 600,
 
-        cursor: dragging
-          ? "grabbing"
-          : "grab",
+        cursor: locked
+          ? "default"
+          : dragging
+            ? "grabbing"
+            : "grab",
 
         userSelect: "none",
         WebkitUserSelect: "none",
@@ -181,6 +188,8 @@ export default function Clip({
       <div
         onMouseDown={(e) => {
           if (e.button !== 0) return;
+
+          if (locked) return;
 
           e.preventDefault();
           e.stopPropagation();
@@ -263,7 +272,11 @@ export default function Clip({
           background:
             "rgba(255,255,255,.35)",
 
-          cursor: "ew-resize",
+          cursor: locked
+            ? "not-allowed"
+            : "ew-resize",
+
+          opacity: locked ? 0.4 : 1,
         }}
       />
 
@@ -272,6 +285,8 @@ export default function Clip({
       <div
         onMouseDown={(e) => {
           if (e.button !== 0) return;
+
+          if (locked) return;
 
           e.preventDefault();
           e.stopPropagation();
@@ -351,9 +366,63 @@ export default function Clip({
           background:
             "rgba(255,255,255,.45)",
 
-          cursor: "ew-resize",
+          cursor: locked
+            ? "not-allowed"
+            : "ew-resize",
+
+          opacity: locked ? 0.4 : 1,
         }}
       />
+
+      {/* LOCK BUTTON */}
+
+      {selected && (
+        <button
+          onMouseDown={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            toggleLock(id);
+          }}
+          style={{
+            position: "absolute",
+
+            top: 4,
+
+            right: 10,
+
+            width: 24,
+
+            height: 24,
+
+            border: "none",
+
+            borderRadius: 6,
+
+            background: "rgba(0,0,0,.35)",
+
+            color: "#fff",
+
+            fontSize: 12,
+
+            cursor: "pointer",
+
+            display: "flex",
+
+            alignItems: "center",
+
+            justifyContent: "center",
+
+            userSelect: "none",
+            WebkitUserSelect: "none",
+          }}
+          title={locked ? "Unlock clip" : "Lock clip"}
+        >
+          {locked ? "🔒" : "🔓"}
+        </button>
+      )}
     </div>
   );
 }

@@ -122,6 +122,7 @@ export default function TimelineTrack({
             title={clip.mediaName}
             start={clip.start}
             duration={clip.duration}
+            locked={clip.locked}
           />
         ))}
       </div>
