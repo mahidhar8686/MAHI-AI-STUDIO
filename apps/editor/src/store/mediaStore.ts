@@ -61,6 +61,12 @@ interface MediaStore {
     duration: number
   ) => void;
 
+  trimClip: (
+    id: string,
+    start: number,
+    duration: number
+  ) => void;
+
   selectClip: (
     id: string
   ) => void;
@@ -250,6 +256,23 @@ export const useMediaStore =
           clip.id === id
             ? {
                 ...clip,
+                duration: Math.max(1, duration),
+              }
+            : clip
+        ),
+      })),
+
+    // ==========================
+    // TRIM CLIP
+    // ==========================
+
+    trimClip: (id, start, duration) =>
+      set((state) => ({
+        timeline: state.timeline.map((clip) =>
+          clip.id === id
+            ? {
+                ...clip,
+                start: Math.max(0, start),
                 duration: Math.max(1, duration),
               }
             : clip

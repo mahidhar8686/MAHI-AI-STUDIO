@@ -18,6 +18,7 @@ export default function Clip({
 
   const moveClip = useMediaStore((s) => s.moveClip);
   const resizeClip = useMediaStore((s) => s.resizeClip);
+  const trimClip = useMediaStore((s) => s.trimClip);
 
   const selectedClip = useMediaStore((s) => s.selectedClip);
   const selectClip = useMediaStore((s) => s.selectClip);
@@ -159,6 +160,62 @@ export default function Clip({
       {/* LEFT HANDLE */}
 
       <div
+        onMouseDown={(e) => {
+          if (e.button !== 0) return;
+
+          e.preventDefault();
+          e.stopPropagation();
+
+          const previousUserSelect = document.body.style.userSelect;
+          document.body.style.userSelect = "none";
+
+          selectClip(id);
+          setResizing(true);
+
+          const startX = e.clientX;
+          const originalStart = start;
+          const originalDuration = duration;
+
+          const move = (ev: MouseEvent) => {
+            const delta = ev.clientX - startX;
+            const deltaSeconds = Math.round(delta / zoom);
+            const nextStart = Math.max(
+              0,
+              originalStart + deltaSeconds
+            );
+            const nextDuration = Math.max(
+              1,
+              originalStart + originalDuration - nextStart
+            );
+
+            trimClip(id, nextStart, nextDuration);
+          };
+
+          const up = () => {
+            setResizing(false);
+            document.body.style.userSelect = previousUserSelect;
+
+            window.removeEventListener(
+              "mousemove",
+              move
+            );
+
+            window.removeEventListener(
+              "mouseup",
+              up
+            );
+          };
+
+          window.addEventListener(
+            "mousemove",
+            move
+          );
+
+          window.addEventListener(
+            "mouseup",
+            up
+          );
+        }}
         style={{
           position: "absolute",
 
@@ -181,12 +238,15 @@ export default function Clip({
 
       <div
         onMouseDown={(e) => {
+          if (e.button !== 0) return;
+
           e.preventDefault();
           e.stopPropagation();
 
           const previousUserSelect = document.body.style.userSelect;
           document.body.style.userSelect = "none";
 
+          selectClip(id);
           setResizing(true);
 
           const startX = e.clientX;
