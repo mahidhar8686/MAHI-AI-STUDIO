@@ -1,7 +1,10 @@
+import { useState } from "react";
 import UploadButton from "../MediaLibrary/UploadButton";
 import MediaList from "../MediaLibrary/MediaList";
 
 export default function MediaPanel() {
+  const [query, setQuery] = useState("");
+
   return (
     <aside className="flex h-full flex-col bg-slate-900 text-slate-100">
       <div className="border-b border-slate-700 bg-slate-950 px-4 py-3">
@@ -17,6 +20,8 @@ export default function MediaPanel() {
         <input
           aria-label="Search media"
           placeholder="Search media..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           className="w-full rounded-lg border border-slate-600 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-400 focus:border-sky-500 focus:outline-none"
         />
       </div>
@@ -26,7 +31,7 @@ export default function MediaPanel() {
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-3 pb-3">
-        <MediaList />
+        <MediaList query={query} />
       </div>
     </aside>
   );

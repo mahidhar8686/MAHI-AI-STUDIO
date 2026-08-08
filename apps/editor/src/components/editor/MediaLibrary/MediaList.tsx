@@ -1,11 +1,24 @@
 import { useMediaStore } from "../../../store/mediaStore";
 
-export default function MediaList() {
+interface Props {
+  query?: string;
+}
+
+export default function MediaList({ query = "" }: Props) {
   const files = useMediaStore((s) => s.files);
   const selected = useMediaStore((s) => s.selected);
   const selectFile = useMediaStore((s) => s.selectFile);
 
-  if (files.length === 0) {
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const visibleFiles =
+    normalizedQuery === ""
+      ? files
+      : files.filter((file) =>
+          file.name.toLowerCase().includes(normalizedQuery)
+        );
+
+  if (visibleFiles.length === 0 && normalizedQuery === "") {
     return (
       <div className="mt-6 rounded-xl border border-dashed border-slate-600 bg-slate-800/70 p-4 text-center text-sm text-slate-300">
         No media imported yet. Use the import button to add video, audio, or image files.
@@ -13,9 +26,17 @@ export default function MediaList() {
     );
   }
 
+  if (visibleFiles.length === 0) {
+    return (
+      <div className="mt-6 rounded-xl border border-dashed border-slate-600 bg-slate-800/70 p-4 text-center text-sm text-slate-300">
+        No media matches "{query.trim()}".
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-2">
-      {files.map((file) => {
+      {visibleFiles.map((file) => {
         const isSelected = selected?.id === file.id;
 
         return (

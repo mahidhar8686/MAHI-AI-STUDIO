@@ -11,7 +11,7 @@ export default function Playhead() {
           e.currentTarget.parentElement!.getBoundingClientRect();
 
         const move = (ev: MouseEvent) => {
-          setPlayhead(ev.clientX - parent.left);
+          setPlayhead(ev.clientX - parent.left - 20);
         };
 
         const up = () => {
@@ -24,7 +24,7 @@ export default function Playhead() {
       }}
       style={{
         position: "absolute",
-        left: playhead,
+        left: playhead + 20,
         top: 40,
         width: 2,
         height: "100%",
