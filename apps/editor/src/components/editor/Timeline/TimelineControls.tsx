@@ -16,6 +16,10 @@ export default function TimelineControls() {
     (s) => s.selectedClip
   );
 
+  const timeline = useMediaStore(
+    (s) => s.timeline
+  );
+
   const deleteClip = useMediaStore(
     (s) => s.deleteClip
   );
@@ -76,7 +80,16 @@ export default function TimelineControls() {
         disabled={!selectedClip}
         onClick={() => {
           if (selectedClip) {
-            splitClip(selectedClip, 2);
+            const clip = timeline.find(
+              (c) => c.id === selectedClip
+            );
+
+            if (!clip) return;
+
+            splitClip(
+              selectedClip,
+              playhead / zoom - clip.start
+            );
           }
         }}
       >

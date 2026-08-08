@@ -11,6 +11,18 @@ export default function Timeline() {
     (state) => state.selectedClip
   );
 
+  const timeline = useMediaStore(
+    (state) => state.timeline
+  );
+
+  const playhead = useMediaStore(
+    (state) => state.playhead
+  );
+
+  const zoom = useMediaStore(
+    (state) => state.zoom
+  );
+
   const deleteClip = useMediaStore(
     (state) => state.deleteClip
   );
@@ -30,12 +42,21 @@ export default function Timeline() {
         deleteClip(selectedClip);
       }
 
-      // Split selected clip
+      // Split selected clip at playhead
       if (
         event.key.toLowerCase() === "s" &&
         selectedClip
       ) {
-        splitClip(selectedClip, 2);
+        const clip = timeline.find(
+          (c) => c.id === selectedClip
+        );
+
+        if (!clip) return;
+
+        splitClip(
+          selectedClip,
+          playhead / zoom - clip.start
+        );
       }
     };
 
@@ -51,6 +72,9 @@ export default function Timeline() {
       );
   }, [
     selectedClip,
+    timeline,
+    playhead,
+    zoom,
     deleteClip,
     splitClip,
   ]);
