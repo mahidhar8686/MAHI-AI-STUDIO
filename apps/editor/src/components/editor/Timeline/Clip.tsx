@@ -30,9 +30,13 @@ export default function Clip({
   return (
     <div
       onMouseDown={(e) => {
-        if (resizing) return;
+        if (resizing || e.button !== 0) return;
 
         e.preventDefault();
+        e.stopPropagation();
+
+        const previousUserSelect = document.body.style.userSelect;
+        document.body.style.userSelect = "none";
 
         selectClip(id);
 
@@ -42,24 +46,19 @@ export default function Clip({
         setDragging(true);
 
         const move = (ev: MouseEvent) => {
-          const delta =
-            ev.clientX - startX;
-
-          const seconds = Math.round(
-            delta / zoom
+          const delta = ev.clientX - startX;
+          const seconds = Math.round(delta / zoom);
+          const nextStart = Math.max(
+            0,
+            originalStart + seconds
           );
 
-          moveClip(
-            id,
-            Math.max(
-              0,
-              originalStart + seconds
-            )
-          );
+          moveClip(id, nextStart);
         };
 
         const up = () => {
           setDragging(false);
+          document.body.style.userSelect = previousUserSelect;
 
           window.removeEventListener(
             "mousemove",
@@ -81,6 +80,9 @@ export default function Clip({
           "mouseup",
           up
         );
+      }}
+      onDragStart={(e) => {
+        e.preventDefault();
       }}
       style={{
         position: "absolute",
@@ -118,6 +120,8 @@ export default function Clip({
           : "grab",
 
         userSelect: "none",
+        WebkitUserSelect: "none",
+        touchAction: "none",
 
         overflow: "hidden",
 
@@ -177,35 +181,27 @@ export default function Clip({
 
       <div
         onMouseDown={(e) => {
+          e.preventDefault();
           e.stopPropagation();
+
+          const previousUserSelect = document.body.style.userSelect;
+          document.body.style.userSelect = "none";
 
           setResizing(true);
 
           const startX = e.clientX;
+          const original = duration;
 
-          const original =
-            duration;
+          const move = (ev: MouseEvent) => {
+            const delta = ev.clientX - startX;
+            const value = original + Math.round(delta / zoom);
 
-          const move = (
-            ev: MouseEvent
-          ) => {
-            const delta =
-              ev.clientX - startX;
-
-            const value =
-              original +
-              Math.round(
-                delta / zoom
-              );
-
-            resizeClip(
-              id,
-              Math.max(1, value)
-            );
+            resizeClip(id, Math.max(1, value));
           };
 
           const up = () => {
             setResizing(false);
+            document.body.style.userSelect = previousUserSelect;
 
             window.removeEventListener(
               "mousemove",
