@@ -5,6 +5,7 @@ export default function PlaybackEngine() {
   const playhead = useMediaStore((s) => s.playhead);
   const zoom = useMediaStore((s) => s.zoom);
   const selected = useMediaStore((s) => s.selected);
+  const mediaUrls = useMediaStore((s) => s.mediaUrls);
 
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -21,7 +22,7 @@ export default function PlaybackEngine() {
   return (
     <video
       ref={videoRef}
-      src={selected.url}
+      src={mediaUrls[selected.id] ?? ""}
       style={{ display: "none" }}
     />
   );

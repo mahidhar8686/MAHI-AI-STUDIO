@@ -5,7 +5,6 @@ export interface MediaFile {
   id: string;
   name: string;
   type: string;
-  url: string;
   available?: boolean;
 }
 
@@ -34,10 +33,17 @@ interface MediaStore {
 
   files: MediaFile[];
   selected?: MediaFile;
+  mediaUrls: Record<string, string>;
 
   addFile: (file: MediaFile) => void;
 
   selectFile: (file: MediaFile) => void;
+
+  setMediaUrl: (mediaId: string, url: string) => void;
+
+  clearMediaUrl: (mediaId: string) => void;
+
+  removeFile: (mediaId: string) => void;
 
   // ==========================
   // TIMELINE
@@ -131,6 +137,8 @@ export const useMediaStore =
 
     selected: undefined,
 
+    mediaUrls: {},
+
     timeline: [],
 
     selectedClip: undefined,
@@ -157,6 +165,48 @@ export const useMediaStore =
     selectFile: (file) =>
       set({
         selected: file,
+      }),
+
+    setMediaUrl: (mediaId, url) =>
+      set((state) => ({
+        mediaUrls: { ...state.mediaUrls, [mediaId]: url },
+      })),
+
+    clearMediaUrl: (mediaId) =>
+      set((state) => {
+        const existing = state.mediaUrls[mediaId];
+        if (existing) {
+          try {
+            URL.revokeObjectURL(existing);
+          } catch {
+            // ignore
+          }
+        }
+        const next = { ...state.mediaUrls };
+        delete next[mediaId];
+        return { mediaUrls: next };
+      }),
+
+    removeFile: (mediaId) =>
+      set((state) => {
+        const existing = state.mediaUrls[mediaId];
+        if (existing) {
+          try {
+            URL.revokeObjectURL(existing);
+          } catch {
+            // ignore
+          }
+        }
+        const nextUrls = { ...state.mediaUrls };
+        delete nextUrls[mediaId];
+        return {
+          files: state.files.filter((f) => f.id !== mediaId),
+          mediaUrls: nextUrls,
+          selected:
+            state.selected?.id === mediaId
+              ? undefined
+              : state.selected,
+        };
       }),
 
     // ==========================

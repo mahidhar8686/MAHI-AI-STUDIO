@@ -11,6 +11,7 @@ export default function MediaList({
   typeFilter = "all",
 }: Props) {
   const files = useMediaStore((s) => s.files);
+  const mediaUrls = useMediaStore((s) => s.mediaUrls);
   const selected = useMediaStore((s) => s.selected);
   const selectFile = useMediaStore((s) => s.selectFile);
 
@@ -67,7 +68,7 @@ export default function MediaList({
             <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-slate-900">
               {isImage ? (
                 <img
-                  src={file.url}
+                  src={mediaUrls[file.id] ?? ""}
                   alt={file.name}
                   className="h-full w-full object-cover"
                 />

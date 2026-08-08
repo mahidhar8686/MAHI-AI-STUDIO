@@ -1,6 +1,7 @@
 import type { MediaFile, TimelineClip } from "../store/mediaStore";
 import { useMediaStore } from "../store/mediaStore";
 import { useEditorStore } from "../stores/editorStore";
+import { loadMedia } from "./mediaStorage";
 
 export const PROJECT_STORAGE_KEY = "mahi-ai-studio:project:v1";
 export const PROJECT_VERSION = 1;
@@ -114,13 +115,7 @@ export function loadProject(): LoadResult {
   }
 
   const validFiles = parsed.project.media.files.map((file) => {
-    let available = true;
-    try {
-      new URL(file.url);
-    } catch {
-      available = false;
-    }
-    return { ...file, available };
+    return { ...file };
   });
 
   useMediaStore.setState({
@@ -135,6 +130,7 @@ export function loadProject(): LoadResult {
     currentTime: 0,
     isPlaying: false,
     zoom: parsed.zoom,
+    mediaUrls: {},
   });
 
   const editor = useEditorStore.getState();
@@ -144,6 +140,32 @@ export function loadProject(): LoadResult {
   editor.setStatus("Project restored");
 
   return { ok: true, restored: true };
+}
+
+export async function restoreMediaBlobs(): Promise<void> {
+  const files = useMediaStore.getState().files;
+  const setMediaUrl = useMediaStore.getState().setMediaUrl;
+  const clearMediaUrl = useMediaStore.getState().clearMediaUrl;
+
+  for (const file of files) {
+    const record = await loadMedia(file.id);
+    if (record) {
+      const url = URL.createObjectURL(record.blob);
+      setMediaUrl(file.id, url);
+      useMediaStore.setState((state) => ({
+        files: state.files.map((f) =>
+          f.id === file.id ? { ...f, available: true } : f
+        ),
+      }));
+    } else {
+      clearMediaUrl(file.id);
+      useMediaStore.setState((state) => ({
+        files: state.files.map((f) =>
+          f.id === file.id ? { ...f, available: false } : f
+        ),
+      }));
+    }
+  }
 }
 
 function isRecord(
@@ -160,8 +182,7 @@ function isValidMediaFile(
   return (
     typeof value.id === "string" &&
     typeof value.name === "string" &&
-    typeof value.type === "string" &&
-    typeof value.url === "string"
+    typeof value.type === "string"
   );
 }
 

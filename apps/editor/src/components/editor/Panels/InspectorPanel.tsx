@@ -90,6 +90,7 @@ export default function InspectorPanel() {
   const timeline = useMediaStore((s) => s.timeline);
   const files = useMediaStore((s) => s.files);
   const toggleLock = useMediaStore((s) => s.toggleLock);
+  const mediaUrls = useMediaStore((s) => s.mediaUrls);
 
   const clip = selectedClip
     ? timeline.find((c) => c.id === selectedClip)
@@ -190,9 +191,9 @@ export default function InspectorPanel() {
                 </span>
                 <span
                   className="max-w-[140px] truncate text-xs text-slate-200"
-                  title={selected.url}
+                  title={mediaUrls[selected.id] ?? ""}
                 >
-                  {selected.url}
+                  {mediaUrls[selected.id] ?? ""}
                 </span>
               </div>
             </div>

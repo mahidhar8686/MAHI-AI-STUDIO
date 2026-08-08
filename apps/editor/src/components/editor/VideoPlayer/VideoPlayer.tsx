@@ -22,6 +22,7 @@ export default function VideoPlayer({
   const audioRef = useRef<HTMLAudioElement>(null);
 
   const selected = useMediaStore((s) => s.selected);
+  const mediaUrls = useMediaStore((s) => s.mediaUrls);
   const isPlaying = useMediaStore((s) => s.isPlaying);
   const currentTime = useMediaStore((s) => s.currentTime);
   const setCurrentTime = useMediaStore((s) => s.setCurrentTime);
@@ -81,7 +82,7 @@ export default function VideoPlayer({
     return (
       <video
         ref={videoRef}
-        src={selected.url}
+        src={selected ? mediaUrls[selected.id] ?? "" : ""}
         controls={false}
         onTimeUpdate={(e) =>
           setCurrentTime((e.target as HTMLVideoElement).currentTime)
@@ -102,7 +103,7 @@ export default function VideoPlayer({
   if (selected.type.startsWith("image")) {
     return (
       <img
-        src={selected.url}
+        src={selected ? mediaUrls[selected.id] ?? "" : ""}
         alt={selected.name}
         style={{
           width: "100%",
@@ -123,7 +124,7 @@ export default function VideoPlayer({
         </div>
         <audio
           ref={audioRef}
-          src={selected.url}
+          src={selected ? mediaUrls[selected.id] ?? "" : ""}
           controls={false}
           onTimeUpdate={(e) =>
             setCurrentTime((e.target as HTMLAudioElement).currentTime)
