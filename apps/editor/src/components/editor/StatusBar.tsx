@@ -3,7 +3,7 @@ import { useMediaStore } from "../../store/mediaStore";
 
 export default function StatusBar() {
   const status = useEditorStore((state) => state.status);
-  const isSaved = useEditorStore((state) => state.isSaved);
+  const saveState = useEditorStore((state) => state.saveState);
   const selected = useMediaStore((state) => state.selected);
   const timeline = useMediaStore((state) => state.timeline);
   const currentTime = useMediaStore((state) => state.currentTime);
@@ -12,13 +12,22 @@ export default function StatusBar() {
   const selectedName = selected?.name ?? "No media selected";
   const totalDuration = timeline.reduce((sum, clip) => sum + clip.duration, 0);
 
+  const saveLabel =
+    saveState === "saved"
+      ? "Saved"
+      : saveState === "saving"
+        ? "Saving..."
+        : saveState === "failed"
+          ? "Save failed"
+          : "Unsaved changes";
+
   return (
     <div className="flex items-center justify-between border-t border-slate-700 bg-slate-950 px-4 text-[11px] text-slate-300">
       <div className="flex items-center gap-4 overflow-hidden">
         <span className="rounded-full bg-emerald-500/15 px-2 py-1 text-emerald-300">
           {status}
         </span>
-        <span>{isSaved ? "Saved" : "Unsaved changes"}</span>
+        <span>{saveLabel}</span>
         <span>Media: {selected ? selectedName : "None"}</span>
         <span>Timeline: {totalDuration.toFixed(1)}s</span>
       </div>

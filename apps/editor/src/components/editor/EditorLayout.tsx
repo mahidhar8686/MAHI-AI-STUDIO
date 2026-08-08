@@ -1,33 +1,38 @@
-import MediaPanel from "./Panels/MediaPanel";
+import EditorHeader from "./Header/EditorHeader";
+import ToolRail from "./ToolRail/ToolRail";
+import AssetPanel from "./Panels/AssetPanel";
 import PreviewPanel from "./Panels/PreviewPanel";
 import InspectorPanel from "./Panels/InspectorPanel";
 import TimelinePanel from "./Panels/TimelinePanel";
-import Toolbar from "./Toolbar/Toolbar";
 import StatusBar from "./StatusBar";
 
 export default function EditorLayout() {
   return (
-    <div className="grid h-screen w-full grid-rows-[72px_minmax(0,1fr)_220px_32px] bg-slate-950 text-white">
-      <Toolbar />
+    <div className="grid h-screen w-full grid-rows-[40px_1fr_240px_24px] bg-slate-950 text-slate-100 overflow-hidden">
+      {/* Top header — compact professional bar */}
+      <EditorHeader />
 
-      <div className="grid min-h-0 grid-cols-1 gap-2.5 p-2.5 xl:grid-cols-[280px_minmax(0,1fr)_320px]">
-        <div className="min-h-0 overflow-hidden rounded-xl border border-slate-700 bg-slate-900">
-          <MediaPanel />
+      {/* Main content: tool rail + asset panel + preview + inspector */}
+      <div className="grid min-h-0 grid-cols-[60px_1fr] gap-2.5 p-2.5 lg:grid-cols-[64px_280px_1fr_320px]">
+        <ToolRail />
+
+        <div className="hidden min-h-0 lg:block">
+          <AssetPanel />
         </div>
 
-        <div className="min-h-0 overflow-hidden rounded-xl border border-slate-700 bg-slate-900">
-          <PreviewPanel />
-        </div>
+        <PreviewPanel />
 
-        <div className="min-h-0 overflow-hidden rounded-xl border border-slate-700 bg-slate-900">
+        <div className="hidden min-h-0 lg:block">
           <InspectorPanel />
         </div>
       </div>
 
-      <div className="min-h-0 overflow-hidden border-t border-slate-700 bg-slate-900">
+      {/* Timeline — full width, fixed height */}
+      <div className="min-h-0 overflow-hidden border-t border-slate-800 bg-slate-900">
         <TimelinePanel />
       </div>
 
+      {/* Status bar */}
       <StatusBar />
     </div>
   );

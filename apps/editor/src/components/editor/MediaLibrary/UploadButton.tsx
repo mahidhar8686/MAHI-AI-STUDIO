@@ -1,13 +1,12 @@
 import type { ChangeEvent } from "react";
+import { Upload } from "lucide-react";
 import { useMediaStore } from "../../../store/mediaStore";
 
 export default function UploadButton() {
   const addFile = useMediaStore((state) => state.addFile);
   const selectFile = useMediaStore((state) => state.selectFile);
 
-  const handleUpload = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleUpload = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
 
     if (!files) return;
@@ -30,9 +29,9 @@ export default function UploadButton() {
   };
 
   return (
-    <label className="flex w-full cursor-pointer items-center justify-center rounded-lg bg-sky-600 px-3 py-2.5 text-sm font-medium text-white transition hover:bg-sky-500">
-      <span className="mr-2">📂</span>
-      <span>Import media</span>
+    <label className="flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-md bg-sky-600 px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-sky-500">
+      <Upload className="h-3.5 w-3.5" />
+      <span>Import</span>
 
       <input
         hidden

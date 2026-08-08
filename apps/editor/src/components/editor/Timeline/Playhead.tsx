@@ -22,27 +22,16 @@ export default function Playhead() {
         window.addEventListener("mousemove", move);
         window.addEventListener("mouseup", up);
       }}
-      style={{
-        position: "absolute",
-        left: playhead + 20,
-        top: 40,
-        width: 2,
-        height: "100%",
-        background: "#EF4444",
-        zIndex: 999,
-        cursor: "ew-resize",
-      }}
+      className="absolute z-[999] cursor-ew-resize"
+      style={{ left: playhead + 20, top: 40, height: "100%" }}
     >
-      <div
-        style={{
-          width: 12,
-          height: 12,
-          background: "#EF4444",
-          borderRadius: "50%",
-          marginLeft: -5,
-          marginTop: -6,
-        }}
-      />
+      {/* Triangle marker — peeks above the line into the ruler area */}
+      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2">
+        <div className="h-0 w-0 border-l-[5px] border-l-transparent border-r-[5px] border-r-transparent border-b-[8px] border-b-red-500" />
+      </div>
+
+      {/* Vertical line */}
+      <div className="absolute inset-0 w-0.5 bg-red-500" />
     </div>
   );
 }

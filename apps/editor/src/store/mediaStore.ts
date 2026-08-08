@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { useEditorStore } from "../stores/editorStore";
 
 export interface MediaFile {
   id: string;
@@ -144,10 +145,13 @@ export const useMediaStore =
     // MEDIA LIBRARY
     // ==========================
 
-    addFile: (file) =>
+    addFile: (file) => {
       set((state) => ({
         files: [...state.files, file],
-      })),
+      }));
+
+      useEditorStore.getState().markUnsaved();
+    },
 
     selectFile: (file) =>
       set({
@@ -195,7 +199,7 @@ export const useMediaStore =
       media,
       track,
       start = 0
-    ) =>
+    ) => {
       set((state) => ({
         timeline: [
           ...state.timeline,
@@ -219,7 +223,10 @@ export const useMediaStore =
             color: "#2563EB",
           },
         ],
-      })),
+      }));
+
+      useEditorStore.getState().markUnsaved();
+    },
 
     selectClip: (id) =>
       set((state) => ({
@@ -234,7 +241,7 @@ export const useMediaStore =
     // MOVE CLIP
     // ==========================
 
-    moveClip: (id, start) =>
+    moveClip: (id, start) => {
       set((state) => ({
         timeline: state.timeline.map((clip) =>
           clip.id === id
@@ -244,13 +251,16 @@ export const useMediaStore =
               }
             : clip
         ),
-      })),
+      }));
+
+      useEditorStore.getState().markUnsaved();
+    },
 
     // ==========================
     // RESIZE CLIP
     // ==========================
 
-    resizeClip: (id, duration) =>
+    resizeClip: (id, duration) => {
       set((state) => ({
         timeline: state.timeline.map((clip) =>
           clip.id === id
@@ -260,13 +270,16 @@ export const useMediaStore =
               }
             : clip
         ),
-      })),
+      }));
+
+      useEditorStore.getState().markUnsaved();
+    },
 
     // ==========================
     // TRIM CLIP
     // ==========================
 
-    trimClip: (id, start, duration) =>
+    trimClip: (id, start, duration) => {
       set((state) => ({
         timeline: state.timeline.map((clip) =>
           clip.id === id
@@ -277,7 +290,10 @@ export const useMediaStore =
               }
             : clip
         ),
-      })),
+      }));
+
+      useEditorStore.getState().markUnsaved();
+    },
 
     // ==========================
     // SPLIT CLIP
@@ -321,13 +337,15 @@ export const useMediaStore =
         ],
         selectedClip: left.id,
       });
+
+      useEditorStore.getState().markUnsaved();
     },
 
     // ==========================
     // DELETE CLIP
     // ==========================
 
-    deleteClip: (id) =>
+    deleteClip: (id) => {
       set((state) => ({
         timeline: state.timeline.filter(
           (clip) => clip.id !== id
@@ -337,13 +355,16 @@ export const useMediaStore =
           state.selectedClip === id
             ? undefined
             : state.selectedClip,
-      })),
+      }));
+
+      useEditorStore.getState().markUnsaved();
+    },
 
     // ==========================
     // LOCK / UNLOCK
     // ==========================
 
-    toggleLock: (id) =>
+    toggleLock: (id) => {
       set((state) => ({
         timeline: state.timeline.map((clip) =>
           clip.id === id
@@ -353,7 +374,10 @@ export const useMediaStore =
               }
             : clip
         ),
-      })),
+      }));
+
+      useEditorStore.getState().markUnsaved();
+    },
           // ==========================
     // ZOOM
     // ==========================

@@ -4,50 +4,21 @@ export default function TimeRuler() {
   const zoom = useMediaStore((s) => s.zoom);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        height: 40,
-        background: "#111827",
-        borderBottom: "1px solid #374151",
-      }}
-    >
-      <div style={{ width: 180 }} />
+    <div className="flex h-10 items-end border-b border-slate-800 bg-slate-950">
+      {/* Track label column spacer */}
+      <div className="w-[180px] flex-shrink-0" />
 
-      <div style={{ width: 20, flexShrink: 0 }} />
+      {/* +20px coordinate-system spacer */}
+      <div className="w-[20px] flex-shrink-0" />
 
       {Array.from({ length: 120 }).map((_, i) => (
         <div
           key={i}
-          style={{
-            width: zoom,
-            flexShrink: 0,
-            position: "relative",
-            color: "#9CA3AF",
-            fontSize: 11,
-          }}
+          className="relative flex-shrink-0 text-[9px] text-slate-500"
+          style={{ width: zoom }}
         >
-          <div
-            style={{
-              position: "absolute",
-              left: 0,
-              top: 0,
-              width: 1,
-              height: 8,
-              background: "#4B5563",
-            }}
-          />
-
-          <div
-            style={{
-              position: "absolute",
-              left: 4,
-              top: 0,
-              lineHeight: "16px",
-            }}
-          >
-            {i}
-          </div>
+          <div className="absolute bottom-0 left-0 h-2 w-px bg-slate-700" />
+          <span className="block pt-2.5">{i}</span>
         </div>
       ))}
     </div>

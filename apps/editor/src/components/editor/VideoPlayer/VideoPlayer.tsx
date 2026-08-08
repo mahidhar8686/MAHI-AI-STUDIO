@@ -1,68 +1,104 @@
 import { useEffect, useRef } from "react";
 import { useMediaStore } from "../../../store/mediaStore";
+import { useEditorStore } from "../../../stores/editorStore";
 
-export default function VideoPlayer() {
+interface Props {
+  duration: number;
+  setDuration: (value: number) => void;
+}
+
+/**
+ * Renders the selected media inside the preview canvas.
+ *
+ * Core playback sync (play / pause / seek) is preserved from the
+ * original implementation.  Added: previewFit (object-fit), previewVolume,
+ * and native controls removed in favour of custom PlaybackControls.
+ */
+export default function VideoPlayer({
+  duration: _duration,
+  setDuration,
+}: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   const selected = useMediaStore((s) => s.selected);
   const isPlaying = useMediaStore((s) => s.isPlaying);
   const currentTime = useMediaStore((s) => s.currentTime);
   const setCurrentTime = useMediaStore((s) => s.setCurrentTime);
 
-  // Play / Pause
-  useEffect(() => {
-    if (!videoRef.current) return;
+  const previewFit = useEditorStore((s) => s.previewFit);
+  const previewVolume = useEditorStore((s) => s.previewVolume);
 
+  const fitMap = {
+    contain: "contain" as const,
+    cover: "cover" as const,
+    fill: "fill" as const,
+  };
+  const objectFit = fitMap[previewFit] ?? "contain";
+
+  // ── Play / Pause ──────────────────────────────────────────────
+  useEffect(() => {
+    const el = isPlaying ? videoRef.current ?? audioRef.current : null;
+    if (!el) return;
     if (isPlaying) {
-      videoRef.current.play().catch(() => {});
+      el.play().catch(() => {});
     } else {
-      videoRef.current.pause();
+      el.pause();
     }
   }, [isPlaying]);
 
-  // Seek
+  // ── Seek ────────────────────────────────────────────────────
   useEffect(() => {
-    if (!videoRef.current) return;
-
-    if (
-      Math.abs(videoRef.current.currentTime - currentTime) > 0.1
-    ) {
-      videoRef.current.currentTime = currentTime;
+    const el = videoRef.current ?? audioRef.current;
+    if (!el) return;
+    if (Math.abs(el.currentTime - currentTime) > 0.1) {
+      el.currentTime = currentTime;
     }
   }, [currentTime]);
 
+  // ── Volume ──────────────────────────────────────────────────
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.volume = previewVolume;
+    if (audioRef.current) audioRef.current.volume = previewVolume;
+  }, [previewVolume]);
+
+  // ── No media ────────────────────────────────────────────────
   if (!selected) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-slate-950 text-center text-sm text-slate-400">
-        <div className="max-w-xs px-4">
+      <div className="flex h-full w-full items-center justify-center text-center text-slate-400">
+        <div>
           <div className="mb-2 text-3xl">📺</div>
-          <p>No media selected. Import a file from the media library to preview it here.</p>
+          <p className="text-xs">
+            No media selected. Import a file to preview it here.
+          </p>
         </div>
       </div>
     );
   }
 
+  // ── Video ───────────────────────────────────────────────────
   if (selected.type.startsWith("video")) {
     return (
       <video
         ref={videoRef}
         src={selected.url}
-        controls
-        onTimeUpdate={(e) => {
-          setCurrentTime(
-            (e.target as HTMLVideoElement).currentTime
-          );
-        }}
+        controls={false}
+        onTimeUpdate={(e) =>
+          setCurrentTime((e.target as HTMLVideoElement).currentTime)
+        }
+        onLoadedMetadata={(e) =>
+          setDuration((e.target as HTMLVideoElement).duration)
+        }
         style={{
           width: "100%",
           height: "100%",
-          objectFit: "contain",
-          background: "#000",
+          objectFit,
         }}
       />
     );
   }
 
+  // ── Image ───────────────────────────────────────────────────
   if (selected.type.startsWith("image")) {
     return (
       <img
@@ -71,46 +107,40 @@ export default function VideoPlayer() {
         style={{
           width: "100%",
           height: "100%",
-          objectFit: "contain",
+          objectFit,
         }}
       />
     );
   }
 
+  // ── Audio ───────────────────────────────────────────────────
   if (selected.type.startsWith("audio")) {
     return (
-      <div
-        style={{
-          width: "100%",
-          height: "100%",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "column",
-          color: "#fff",
-        }}
-      >
-        <h3>{selected.name}</h3>
-
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 text-slate-100">
+        <div className="text-center">
+          <div className="mb-2 text-3xl">🎵</div>
+          <p className="text-sm font-medium">{selected.name}</p>
+        </div>
         <audio
-          controls
+          ref={audioRef}
           src={selected.url}
-          style={{
-            width: "80%",
-          }}
+          controls={false}
+          onTimeUpdate={(e) =>
+            setCurrentTime((e.target as HTMLAudioElement).currentTime)
+          }
+          onLoadedMetadata={(e) =>
+            setDuration((e.target as HTMLAudioElement).duration)
+          }
+          style={{ display: "none" }}
         />
       </div>
     );
   }
 
+  // ── Fallback ────────────────────────────────────────────────
   return (
-    <div
-      style={{
-        color: "#fff",
-        padding: 20,
-      }}
-    >
-      Unsupported media type
+    <div className="flex h-full w-full items-center justify-center p-4 text-center text-slate-400">
+      <p>Unsupported media type: {selected.type}</p>
     </div>
   );
 }

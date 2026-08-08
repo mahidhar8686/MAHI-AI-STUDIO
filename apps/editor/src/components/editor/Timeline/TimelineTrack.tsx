@@ -1,14 +1,17 @@
+import type { ElementType } from "react";
 import Clip from "./Clip";
 import { useMediaStore } from "../../../store/mediaStore";
 
 interface Props {
   title: string;
   track: number;
+  icon: ElementType;
 }
 
 export default function TimelineTrack({
   title,
   track,
+  icon: Icon,
 }: Props) {
   const files = useMediaStore((s) => s.files);
   const timeline = useMediaStore((s) => s.timeline);
@@ -20,47 +23,26 @@ export default function TimelineTrack({
     .sort((a, b) => a.start - b.start);
 
   return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "180px 1fr",
-        minHeight: 70,
-        borderBottom: "1px solid #374151",
-      }}
-    >
-      {/* Track Name */}
-
-      <div
-        style={{
-          background: "#1F2937",
-          color: "#fff",
-          display: "flex",
-          alignItems: "center",
-          paddingLeft: 15,
-          fontWeight: 600,
-        }}
-      >
+    <div className="grid min-h-[70px] grid-cols-[180px_1fr] border-b border-slate-800">
+      {/* Track header */}
+      <div className="flex items-center gap-2 bg-slate-800 px-3 text-xs font-semibold text-white">
+        <Icon className="h-3.5 w-3.5 text-slate-400" />
         {title}
       </div>
 
-      {/* Timeline */}
-
+      {/* Timeline content area */}
       <div
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           e.preventDefault();
 
-          const mediaId =
-            e.dataTransfer.getData("media-id");
+          const mediaId = e.dataTransfer.getData("media-id");
 
-          const media = files.find(
-            (f) => f.id === mediaId
-          );
+          const media = files.find((f) => f.id === mediaId);
 
           if (!media) return;
 
-          const rect =
-            e.currentTarget.getBoundingClientRect();
+          const rect = e.currentTarget.getBoundingClientRect();
 
           const x = e.clientX - rect.left;
 
@@ -70,51 +52,30 @@ export default function TimelineTrack({
           );
 
           addClip(
-            {
-              ...media,
-            },
+            { ...media },
             track,
             dropStart
           );
         }}
-        style={{
-          position: "relative",
-          minHeight: 70,
-          background: "#0F172A",
-          overflowX: "auto",
-        }}
+        className="relative min-h-[70px] overflow-x-auto bg-slate-900"
       >
-        {/* Grid */}
-
+        {/* Grid lines — left: i * zoom + 20 is PRESERVED */}
         {Array.from({ length: 200 }).map((_, i) => (
           <div
             key={i}
-            style={{
-              position: "absolute",
-              left: i * zoom + 20,
-              top: 0,
-              width: 1,
-              height: "100%",
-              background: "#1F2937",
-            }}
+            className="absolute top-0 h-full w-px bg-slate-800"
+            style={{ left: i * zoom + 20 }}
           />
         ))}
 
-        {/* Empty */}
-
+        {/* Empty placeholder */}
         {clips.length === 0 && (
-          <div
-            style={{
-              color: "#6B7280",
-              padding: 20,
-            }}
-          >
+          <div className="p-4 text-xs text-slate-500">
             Drag media here...
           </div>
         )}
 
         {/* Clips */}
-
         {clips.map((clip) => (
           <Clip
             key={clip.id}

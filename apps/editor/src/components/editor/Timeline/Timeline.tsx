@@ -5,6 +5,7 @@ import TimelineControls from "./TimelineControls";
 import TimeRuler from "./TimeRuler";
 import Playhead from "./Playhead";
 import TimelineTrack from "./TimelineTrack";
+import { Clapperboard, Music, Captions, Sparkles } from "lucide-react";
 
 export default function Timeline() {
   const selectedClip = useMediaStore(
@@ -115,28 +116,33 @@ export default function Timeline() {
         {/* Tracks */}
 
         <TimelineTrack
-          title="🎬 Video Track 1"
+          title="Video Track 1"
           track={0}
+          icon={Clapperboard}
         />
 
         <TimelineTrack
-          title="🎬 Video Track 2"
+          title="Video Track 2"
           track={1}
+          icon={Clapperboard}
         />
 
         <TimelineTrack
-          title="🎵 Audio Track"
+          title="Audio Track"
           track={2}
+          icon={Music}
         />
 
         <TimelineTrack
-          title="💬 Caption Track"
+          title="Captions Track"
           track={3}
+          icon={Captions}
         />
 
         <TimelineTrack
-          title="✨ Effects Track"
+          title="Effects Track"
           track={4}
+          icon={Sparkles}
         />
       </div>
 
