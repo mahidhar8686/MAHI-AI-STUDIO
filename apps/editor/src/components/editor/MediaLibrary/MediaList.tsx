@@ -1,6 +1,6 @@
 import { useMediaStore } from "../../../store/mediaStore";
 import { cn } from "../../../utils/cn";
-import { Trash2 } from "lucide-react";
+import { Trash2, Film, Music } from "lucide-react";
 
 interface Props {
   query?: string;
@@ -65,6 +65,14 @@ export default function MediaList({
         }
       };
 
+      const typeLabel = file.type.startsWith("video")
+        ? "VIDEO"
+        : file.type.startsWith("audio")
+          ? "AUDIO"
+          : file.type.startsWith("image")
+            ? "IMAGE"
+            : "FILE";
+
       return (
         <button
           key={file.id}
@@ -89,9 +97,9 @@ export default function MediaList({
                   className="h-full w-full object-cover"
                 />
               ) : isVideo ? (
-                <span className="text-2xl">🎬</span>
+                <Film className="h-6 w-6 text-slate-400" />
               ) : (
-                <span className="text-2xl">🎵</span>
+                <Music className="h-6 w-6 text-slate-400" />
               )}
               <button
                 type="button"
@@ -108,8 +116,13 @@ export default function MediaList({
               )}
             </div>
 
-            <div className="min-w-0">
-              <div className="truncate text-xs font-medium">{file.name}</div>
+            <div className="min-w-0 w-full">
+              <div className="flex items-center justify-between gap-1">
+                <div className="truncate text-xs font-medium">{file.name}</div>
+                <span className="shrink-0 rounded bg-slate-700 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-slate-300">
+                  {typeLabel}
+                </span>
+              </div>
               <div className="truncate text-[10px] text-slate-400">
                 {file.type || "Unknown type"}
               </div>
