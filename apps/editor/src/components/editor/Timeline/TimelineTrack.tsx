@@ -64,7 +64,7 @@ export default function TimelineTrack({
 
           const x = e.clientX - rect.left;
 
-          Math.max(
+          const dropStart = Math.max(
             0,
             Math.round((x - 20) / zoom)
           );
@@ -73,10 +73,9 @@ export default function TimelineTrack({
             {
               ...media,
             },
-            track
+            track,
+            dropStart
           );
-
-          // Next version will place clip at drop position
         }}
         style={{
           position: "relative",
