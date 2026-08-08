@@ -14,11 +14,13 @@ export default function TimeRuler() {
       {Array.from({ length: 120 }).map((_, i) => (
         <div
           key={i}
-          className="relative flex-shrink-0 text-[9px] text-slate-500"
+          className="relative flex-shrink-0"
           style={{ width: zoom }}
         >
-          <div className="absolute bottom-0 left-0 h-2 w-px bg-slate-700" />
-          <span className="block pt-2.5">{i}</span>
+          <div className="absolute bottom-0 left-0 h-2 w-px bg-slate-600" />
+          <span className="block pt-2.5 text-[10px] font-medium text-slate-400">
+            {i}
+          </span>
         </div>
       ))}
     </div>

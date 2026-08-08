@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useMediaStore } from "../../../store/mediaStore";
+import { Film } from "lucide-react";
 import {
   buildSnapTargets,
   snapTimelinePosition,
@@ -163,25 +164,10 @@ export default function Clip({
           : "none",
       }}
     >
-      <span
-        style={{
-          width: "100%",
-
-          overflow: "hidden",
-
-          whiteSpace: "nowrap",
-
-          textOverflow: "ellipsis",
-
-          padding: "0 10px",
-
-          textAlign: "center",
-
-          pointerEvents: "none",
-        }}
-      >
-        🎬 {title}
-      </span>
+      <div className="flex items-center justify-center gap-1.5 overflow-hidden px-2">
+        <Film className="h-3 w-3 flex-shrink-0" />
+        <span className="truncate text-xs font-medium">{title}</span>
+      </div>
 
       {/* LEFT HANDLE */}
 
@@ -386,41 +372,18 @@ export default function Clip({
             e.stopPropagation();
             toggleLock(id);
           }}
-          style={{
-            position: "absolute",
-
-            top: 4,
-
-            right: 10,
-
-            width: 24,
-
-            height: 24,
-
-            border: "none",
-
-            borderRadius: 6,
-
-            background: "rgba(0,0,0,.35)",
-
-            color: "#fff",
-
-            fontSize: 12,
-
-            cursor: "pointer",
-
-            display: "flex",
-
-            alignItems: "center",
-
-            justifyContent: "center",
-
-            userSelect: "none",
-            WebkitUserSelect: "none",
-          }}
+          className="absolute top-1 right-2 flex h-6 w-6 items-center justify-center rounded-md bg-black/40 text-white transition-colors hover:bg-black/60"
           title={locked ? "Unlock clip" : "Lock clip"}
         >
-          {locked ? "🔒" : "🔓"}
+          {locked ? (
+            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          ) : (
+            <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 018 0m-8 0v4h8v-4m-8 0H6a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2h-2m-8 0h8" />
+            </svg>
+          )}
         </button>
       )}
     </div>

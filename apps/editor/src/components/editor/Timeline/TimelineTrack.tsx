@@ -23,11 +23,11 @@ export default function TimelineTrack({
     .sort((a, b) => a.start - b.start);
 
   return (
-    <div className="grid min-h-[70px] grid-cols-[180px_1fr] border-b border-slate-800">
+    <div className="grid min-h-[70px] grid-cols-[180px_1fr] border-b border-slate-800/80">
       {/* Track header */}
-      <div className="flex items-center gap-2 bg-slate-800 px-3 text-xs font-semibold text-white">
+      <div className="flex items-center gap-2 bg-slate-800/90 px-3 text-xs font-semibold text-slate-200 backdrop-blur-sm">
         <Icon className="h-3.5 w-3.5 text-slate-400" />
-        {title}
+        <span className="truncate">{title}</span>
       </div>
 
       {/* Timeline content area */}
@@ -57,20 +57,20 @@ export default function TimelineTrack({
             dropStart
           );
         }}
-        className="relative min-h-[70px] overflow-x-auto bg-slate-900"
+        className="relative min-h-[70px] overflow-x-auto bg-slate-900/95"
       >
         {/* Grid lines — left: i * zoom + 20 is PRESERVED */}
         {Array.from({ length: 200 }).map((_, i) => (
           <div
             key={i}
-            className="absolute top-0 h-full w-px bg-slate-800"
+            className="absolute top-0 h-full w-px bg-slate-800/60"
             style={{ left: i * zoom + 20 }}
           />
         ))}
 
         {/* Empty placeholder */}
         {clips.length === 0 && (
-          <div className="p-4 text-xs text-slate-500">
+          <div className="flex h-full items-center justify-center p-4 text-xs text-slate-500">
             Drag media here...
           </div>
         )}
