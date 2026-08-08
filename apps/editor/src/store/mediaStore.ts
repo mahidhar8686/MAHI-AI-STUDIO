@@ -176,16 +176,16 @@ export const useMediaStore =
       }),
 
     setCurrentTime: (value) =>
-      set({
+      set((state) => ({
         currentTime: value,
-        playhead: value * 40,
-      }),
+        playhead: value * state.zoom,
+      })),
 
     setPlayhead: (value) =>
-      set({
+      set((state) => ({
         playhead: Math.max(0, value),
-        currentTime: Math.max(0, value / 40),
-      }),
+        currentTime: Math.max(0, value / state.zoom),
+      })),
 
     // ==========================
     // TIMELINE
