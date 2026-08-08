@@ -1,5 +1,6 @@
 import { useMediaStore } from "../../../store/mediaStore";
 import { cn } from "../../../utils/cn";
+import { Trash2 } from "lucide-react";
 
 interface Props {
   query?: string;
@@ -14,6 +15,8 @@ export default function MediaList({
   const mediaUrls = useMediaStore((s) => s.mediaUrls);
   const selected = useMediaStore((s) => s.selected);
   const selectFile = useMediaStore((s) => s.selectFile);
+  const removeFile = useMediaStore((s) => s.removeFile);
+  const removeMediaWithClips = useMediaStore((s) => s.removeMediaWithClips);
 
   const normalizedQuery = query.trim().toLowerCase();
 
@@ -49,22 +52,35 @@ export default function MediaList({
         const isImage = file.type.startsWith("image");
         const isVideo = file.type.startsWith("video");
 
-        return (
-          <button
-            key={file.id}
-            type="button"
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.setData("media-id", file.id);
-            }}
-            onClick={() => selectFile(file)}
-            className={cn(
-              "group relative flex cursor-pointer flex-col items-center gap-2 rounded-lg border bg-slate-800 p-3 text-left text-slate-100 transition-all duration-150 hover:border-slate-500 hover:bg-slate-700",
-              isSelected
-                ? "border-sky-500 bg-sky-500/10 ring-1 ring-sky-400"
-                : "border-slate-700",
-            )}
-          >
+      const handleDelete = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        const result = await removeFile(file.id);
+        if (result && !result.ok && result.needsConfirmation) {
+          const confirmed = window.confirm(
+            `This media is used in ${result.clipCount} timeline clip(s). Remove the media and its clips?`
+          );
+          if (confirmed) {
+            await removeMediaWithClips(file.id);
+          }
+        }
+      };
+
+      return (
+        <button
+          key={file.id}
+          type="button"
+          draggable
+          onDragStart={(e) => {
+            e.dataTransfer.setData("media-id", file.id);
+          }}
+          onClick={() => selectFile(file)}
+          className={cn(
+            "group relative flex cursor-pointer flex-col items-center gap-2 rounded-lg border bg-slate-800 p-3 text-left text-slate-100 transition-all duration-150 hover:border-slate-500 hover:bg-slate-700",
+            isSelected
+              ? "border-sky-500 bg-sky-500/10 ring-1 ring-sky-400"
+              : "border-slate-700",
+          )}
+        >
             <div className="relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-md bg-slate-900">
               {isImage ? (
                 <img
@@ -77,6 +93,14 @@ export default function MediaList({
               ) : (
                 <span className="text-2xl">🎵</span>
               )}
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="absolute right-1 top-1 rounded-md bg-black/60 p-1 text-red-400 opacity-0 transition-opacity hover:bg-black/80 hover:text-red-300 group-hover:opacity-100"
+                title="Delete media"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
               {!file.available && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/60 text-[10px] text-slate-200">
                   Unavailable

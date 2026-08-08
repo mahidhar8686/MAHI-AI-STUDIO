@@ -101,7 +101,7 @@ export async function loadMedia(
   }
 }
 
-export async function deleteMedia(mediaId: string): Promise<void> {
+export async function deleteMedia(mediaId: string): Promise<{ ok: boolean; error?: string }> {
   try {
     const db = await getDb();
     await new Promise<void>((resolve, reject) => {
@@ -111,8 +111,13 @@ export async function deleteMedia(mediaId: string): Promise<void> {
       req.onsuccess = () => resolve();
       req.onerror = () => reject(req.error);
     });
+    return { ok: true };
   } catch (error) {
     console.warn("Failed to delete media from IndexedDB:", error);
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Unknown IndexedDB error",
+    };
   }
 }
 
